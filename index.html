@@ -1,28 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Javascript Interface</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Info</title>
 </head>
 <body>
-  <h1>Android Device Information</h1>
-  
-  <button onclick="getAndroidDeviceInfo()">Get Device Info</button>
-  
-  <p id="deviceInfo"></p>
+    <h1>Device Information</h1>
+    <div id="deviceInfo"></div>
 
-  <script>
-    // Android cihaz bilgilerini almak için fonksiyon
-    function getAndroidDeviceInfo() {
-      if (typeof AndroidDeviceInfo !== 'undefined') {
-        // Android tarafındaki getDeviceInfo fonksiyonunu çağırıyoruz
-        var deviceInfo = AndroidDeviceInfo.getDeviceInfo();
-        document.getElementById("deviceInfo").innerHTML = deviceInfo;
-      } else {
-        alert("AndroidDeviceInfo is not defined");
-      }
-    }
-  </script>
+    <script>
+        function getDeviceInfo() {
+            // Android cihaz bilgisini al
+            if (window.Android) {
+                window.Android.getDeviceInfo();
+            }
+        }
+
+        // Android'den gelen veriyi JavaScript'e almak için
+        function displayDeviceInfo(deviceInfo) {
+            const device = JSON.parse(deviceInfo);
+            document.getElementById('deviceInfo').innerText = `Model: ${device.model}, Version: ${device.version}`;
+        }
+
+        // Android'den gelen bilgiyi JavaScript'e göndermek
+        window.Android = {
+            getDeviceInfo: function() {
+                // Burada WebView tarafından çağrılan Android.getDeviceInfo() metodunun sonucu olacak.
+                const deviceInfo = JSON.stringify({model: "Samsung", version: "11.0"});
+                displayDeviceInfo(deviceInfo);
+            }
+        };
+        
+        // Web sayfası yüklendiğinde cihaz bilgilerini al
+        window.onload = function() {
+            getDeviceInfo();
+        }
+    </script>
 </body>
 </html>
