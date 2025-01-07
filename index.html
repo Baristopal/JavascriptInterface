@@ -7,35 +7,33 @@
 </head>
 <body>
     <h1>Device Information</h1>
-    <div id="deviceInfo"></div>
+    <div id="deviceInfo">Loading device information...</div>
 
     <script>
+        // Android cihazından veri al
         function getDeviceInfo() {
-            // Android cihaz bilgisini al
-            if (window.Android) {
-                window.Android.getDeviceInfo();
-            }
-        }
-
-        // Android'den gelen veriyi JavaScript'e almak için
-        function displayDeviceInfo(deviceInfo) {
-            const device = JSON.parse(deviceInfo);
-            document.getElementById('deviceInfo').innerText = `Model: ${device.model}, Version: ${device.version}`;
-        }
-
-        // Android'den gelen bilgiyi JavaScript'e göndermek
-        window.Android = {
-            getDeviceInfo: function() {
-                // Burada WebView tarafından çağrılan Android.getDeviceInfo() metodunun sonucu olacak.
-                const deviceInfo = JSON.stringify({model: "Samsung", version: "11.0"});
+            if (window.Android && typeof window.Android.getDeviceInfo === "function") {
+                // Android'den gelen cihaz bilgilerini al
+                const deviceInfo = window.Android.getDeviceInfo();
                 displayDeviceInfo(deviceInfo);
+            } else {
+                document.getElementById("deviceInfo").innerText = "Android cihaz bilgisine erişilemiyor!";
             }
-        };
-        
-        // Web sayfası yüklendiğinde cihaz bilgilerini al
-        window.onload = function() {
-            getDeviceInfo();
         }
+
+        // Gelen JSON verisini çöz ve ekrana yazdır
+        function displayDeviceInfo(deviceInfo) {
+            try {
+                const device = JSON.parse(deviceInfo);
+                document.getElementById("deviceInfo").innerText = `Model: ${device.model}, Version: ${device.version}`;
+            } catch (e) {
+                console.error("Geçersiz JSON formatı:", e);
+                document.getElementById("deviceInfo").innerText = "Cihaz bilgisi alınırken hata oluştu!";
+            }
+        }
+
+        // Sayfa yüklendiğinde cihaz bilgilerini al
+        window.onload = getDeviceInfo;
     </script>
 </body>
 </html>
