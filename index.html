@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Info</title>
+    <script>
+        window.onload = function() {
+            try {
+                if (typeof AndroidDeviceInfo !== "undefined" && AndroidDeviceInfo.getDeviceInfo) {
+                    // Android cihaz bilgilerini al
+                    const deviceInfo = AndroidDeviceInfo.getDeviceInfo();
+                    const parsedInfo = JSON.parse(deviceInfo);
+                    console.log("Cihaz Bilgileri:", parsedInfo);
+
+                    // Bilgileri sayfada göster
+                    document.getElementById("deviceInfo").innerText = `
+                        Cihaz Adı: ${parsedInfo.device_name}
+                        Android ID: ${parsedInfo.android_id}
+                    `;
+
+                    // Canlı sunucuya gönder
+                    fetch("https://soft-taffy-49da2c.netlify.app/api/device-info", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(parsedInfo)
+                    })
+                    .then(response => response.json())
+                    .then(data => console.log("Başarılı gönderim:", data))
+                    .catch(error => console.error("Sunucuya gönderim hatası:", error));
+                } else {
+                    console.error("AndroidDeviceInfo tanımlı değil!");
+                    document.getElementById("deviceInfo").innerText = "AndroidDeviceInfo erişilemiyor.";
+                }
+            } catch (e) {
+                console.error("JavaScript Hatası:", e.message);
+                document.getElementById("deviceInfo").innerText = "Bir hata oluştu: " + e.message;
+            }
+        };
+    </script>
+</head>
+<body>
+    <h1>Cihaz Bilgileri</h1>
+    <p id="deviceInfo">Bilgiler yükleniyor...</p>
+</body>
+</html>
