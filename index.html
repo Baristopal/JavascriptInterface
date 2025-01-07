@@ -4,21 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Device Info</title>
+    <style>
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <h1>Device Information</h1>
     <div id="deviceInfo">Loading device information...</div>
-    <button onclick="refreshDeviceInfo()">Yenile</button>
+    <button onclick="getDeviceInfo()">Yenile</button>
 
     <script>
-        async function getDeviceInfo() {
+        function getDeviceInfo() {
             try {
-                // API üzerinden cihaz bilgilerini al
-                const deviceInfo = await window.deviceAPI.getDeviceInfo();
+                document.getElementById("deviceInfo").innerText = "Cihaz bilgileri yükleniyor...";
+                
+                // Doğrudan AndroidInterface'i kullan
+                const deviceInfo = AndroidInterface.getDeviceInfo();
                 displayDeviceInfo(deviceInfo);
             } catch (error) {
+                console.error('Hata:', error);
                 document.getElementById("deviceInfo").innerHTML = 
-                    `<pre>Cihaz bilgileri alınamadı: ${error.message}</pre>`;
+                    `<pre>Cihaz bilgileri alınamadı. 
+Bu sayfayı Android uygulaması içinden açtığınızdan emin olun.</pre>`;
             }
         }
 
@@ -26,26 +43,19 @@
             try {
                 const device = JSON.parse(deviceInfo);
                 const info = `
-                    <pre>
-                    Model: ${device.model}
-                    Marka: ${device.brand}
-                    Üretici: ${device.manufacturer}
-                    Android Sürümü: ${device.version}
-                    Ürün: ${device.product}
-                    Cihaz: ${device.device}
-                    </pre>
-                `;
-                document.getElementById("deviceInfo").innerHTML = info;
+Model: ${device.model}
+Marka: ${device.brand}
+Üretici: ${device.manufacturer}
+Android Sürümü: ${device.version}
+Ürün: ${device.product}
+Cihaz: ${device.device}`;
+                
+                document.getElementById("deviceInfo").innerHTML = `<pre>${info}</pre>`;
             } catch (e) {
                 console.error("JSON Parse Hatası:", e);
                 document.getElementById("deviceInfo").innerHTML = 
                     `<pre>Cihaz bilgileri işlenirken hata oluştu: ${e.message}</pre>`;
             }
-        }
-
-        function refreshDeviceInfo() {
-            document.getElementById("deviceInfo").innerText = "Cihaz bilgileri yükleniyor...";
-            getDeviceInfo();
         }
 
         // Sayfa yüklendiğinde cihaz bilgilerini al
