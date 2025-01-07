@@ -8,16 +8,37 @@
 <body>
     <h1>Device Information</h1>
     <div id="deviceInfo">Loading device information...</div>
-    <button onclick="AndroidInterface.showToast('JavaScript Interface çalışıyor!')">Test Et</button>
+    <button onclick="testDevice()">Test Et</button>
     <script>
+        // Android WebView'da olup olmadığımızı kontrol et
+        function isInAndroidWebView() {
+            return typeof window.AndroidInterface !== 'undefined';
+        }
+
+        // Test fonksiyonu
+        function testDevice() {
+            if (isInAndroidWebView()) {
+                AndroidInterface.showToast('JavaScript Interface çalışıyor!');
+            } else {
+                alert('Bu özellik sadece Android uygulamasında çalışır! Şu anda web tarayıcısındasınız.');
+            }
+        }
+
         // Android cihazından veri al
         function getDeviceInfo() {
-            if (window.AndroidInterface && typeof window.AndroidInterface.getDeviceInfo === "function") {
-                // Android'den gelen cihaz bilgilerini al
-                const deviceInfo = window.AndroidInterface.getDeviceInfo();
-                displayDeviceInfo(deviceInfo);
+            if (isInAndroidWebView()) {
+                try {
+                    // Android'den gelen cihaz bilgilerini al
+                    const deviceInfo = AndroidInterface.getDeviceInfo();
+                    displayDeviceInfo(deviceInfo);
+                } catch (e) {
+                    console.error("Hata:", e);
+                    document.getElementById("deviceInfo").innerText = "Cihaz bilgisi alınırken hata oluştu!";
+                }
             } else {
-                document.getElementById("deviceInfo").innerText = "Android cihaz bilgisine erişilemiyor!";
+                document.getElementById("deviceInfo").innerText = 
+                    "Bu sayfa bir web tarayıcısında görüntüleniyor. Android cihaz bilgilerine erişmek için " +
+                    "lütfen Android uygulamasını kullanın.";
             }
         }
 
@@ -25,15 +46,21 @@
         function displayDeviceInfo(deviceInfo) {
             try {
                 const device = JSON.parse(deviceInfo);
-                document.getElementById("deviceInfo").innerText = `Model: ${device.model}, Version: ${device.version}`;
+                document.getElementById("deviceInfo").innerText = 
+                    `Model: ${device.model}\nVersion: ${device.version}`;
             } catch (e) {
                 console.error("Geçersiz JSON formatı:", e);
-                document.getElementById("deviceInfo").innerText = "Cihaz bilgisi alınırken hata oluştu!";
+                document.getElementById("deviceInfo").innerText = 
+                    "Cihaz bilgisi alınırken hata oluştu!";
             }
         }
 
         // Sayfa yüklendiğinde cihaz bilgilerini al
-        window.onload = getDeviceInfo;
+        window.onload = function() {
+            console.log("Sayfa yüklendi");
+            console.log("AndroidInterface mevcut mu:", isInAndroidWebView());
+            getDeviceInfo();
+        };
     </script>
 </body>
 </html>
