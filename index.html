@@ -8,16 +8,31 @@
 <body>
     <h1>Device Information</h1>
     <div id="deviceInfo">Loading device information...</div>
-    <button onclick="Android.showToast('JavaScript Interface çalışıyor!')">Test Et</button>
+    <button onclick="testInterface()">Test Et</button>
     <script>
+        // Android interface'in varlığını kontrol et
+        function isAndroidDevice() {
+            return typeof window.Android !== "undefined";
+        }
+
+        // Test butonu için güvenli çağrı
+        function testInterface() {
+            if (isAndroidDevice()) {
+                Android.showToast('JavaScript Interface çalışıyor!');
+            } else {
+                alert('Bu özellik sadece Android uygulamasında çalışır!');
+            }
+        }
+
         // Android cihazından veri al
         function getDeviceInfo() {
-            if (window.Android && typeof window.Android.getDeviceInfo === "function") {
+            if (isAndroidDevice() && typeof window.Android.getDeviceInfo === "function") {
                 // Android'den gelen cihaz bilgilerini al
                 const deviceInfo = window.Android.getDeviceInfo();
                 displayDeviceInfo(deviceInfo);
             } else {
-                document.getElementById("deviceInfo").innerText = "Android cihaz bilgisine erişilemiyor!";
+                document.getElementById("deviceInfo").innerText = 
+                    "Bu sayfa bir web tarayıcısında görüntüleniyor. Android cihaz bilgilerine erişilemez.";
             }
         }
 
@@ -25,10 +40,12 @@
         function displayDeviceInfo(deviceInfo) {
             try {
                 const device = JSON.parse(deviceInfo);
-                document.getElementById("deviceInfo").innerText = `Model: ${device.model}, Version: ${device.version}`;
+                document.getElementById("deviceInfo").innerText = 
+                    `Model: ${device.model}, Version: ${device.version}`;
             } catch (e) {
                 console.error("Geçersiz JSON formatı:", e);
-                document.getElementById("deviceInfo").innerText = "Cihaz bilgisi alınırken hata oluştu!";
+                document.getElementById("deviceInfo").innerText = 
+                    "Cihaz bilgisi alınırken hata oluştu!";
             }
         }
 
