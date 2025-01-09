@@ -13,8 +13,38 @@
         }
         button {
             padding: 10px 20px;
-            margin: 10px 0;
+            margin: 10px 5px;
             cursor: pointer;
+            border-radius: 5px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+        }
+        .battery-container {
+            width: 100%;
+            max-width: 300px;
+            background-color: #ddd;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .battery-level {
+            width: 0%;
+            height: 30px;
+            background-color: #4CAF50;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+            transition: width 0.3s ease;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        #volumeButton {
+            background-color: #2196F3;
+        }
+        #volumeButton.muted {
+            background-color: #f44336;
         }
     </style>
 </head>
@@ -23,12 +53,22 @@
     <div id="deviceInfo">Loading device information...</div>
     <button onclick="getDeviceInfo()">Yenile</button>
 
+    <div class="controls">
+        <button id="volumeButton" onclick="toggleVolume()">Ses: Açık</button>
+    </div>
+
+    <h2>Batarya Durumu</h2>
+    <div class="battery-container">
+        <div id="batteryLevel" class="battery-level">100%</div>
+    </div>
+
     <script>
+        let isMuted = false;
+        let batteryPercent = 100;
+
         function getDeviceInfo() {
             try {
                 document.getElementById("deviceInfo").innerText = "Cihaz bilgileri yükleniyor...";
-                
-                // Doğrudan AndroidInterface'i kullan
                 const deviceInfo = AndroidInterface.getDeviceInfo();
                 displayDeviceInfo(deviceInfo);
             } catch (error) {
@@ -55,6 +95,50 @@ Cihaz: ${device.device}`;
                 console.error("JSON Parse Hatası:", e);
                 document.getElementById("deviceInfo").innerHTML = 
                     `<pre>Cihaz bilgileri işlenirken hata oluştu: ${e.message}</pre>`;
+            }
+        }
+
+        function toggleVolume() {
+            try {
+                isMuted = !isMuted;
+                const volumeButton = document.getElementById('volumeButton');
+                
+                if (isMuted) {
+                    AndroidInterface.setVolume(0);
+                    volumeButton.textContent = 'Ses: Kapalı';
+                    volumeButton.classList.add('muted');
+                } else {
+                    AndroidInterface.setVolume(100);
+                    volumeButton.textContent = 'Ses: Açık';
+                    volumeButton.classList.remove('muted');
+                }
+
+                // Batarya seviyesini güncelle
+                updateBatteryLevel();
+            } catch (error) {
+                console.error('Ses kontrolü hatası:', error);
+            }
+        }
+
+        function updateBatteryLevel() {
+            // Her ses değişiminde batarya seviyesini %10 değiştir
+            if (isMuted) {
+                batteryPercent = Math.max(0, batteryPercent - 10);
+            } else {
+                batteryPercent = Math.min(100, batteryPercent + 10);
+            }
+
+            const batteryLevel = document.getElementById('batteryLevel');
+            batteryLevel.style.width = batteryPercent + '%';
+            batteryLevel.textContent = batteryPercent + '%';
+
+            // Batarya seviyesine göre renk değiştir
+            if (batteryPercent <= 20) {
+                batteryLevel.style.backgroundColor = '#f44336';
+            } else if (batteryPercent <= 50) {
+                batteryLevel.style.backgroundColor = '#ff9800';
+            } else {
+                batteryLevel.style.backgroundColor = '#4CAF50';
             }
         }
 
