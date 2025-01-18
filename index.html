@@ -81,12 +81,12 @@ Bu sayfayı Android uygulaması içinden açtığınızdan emin olun.</pre>`;
             try {
                 const device = JSON.parse(deviceInfo);
                 const info = `
-Model: ${device.model}
-Marka: ${device.brand}
-Üretici: ${device.manufacturer}
-Android Sürümü: ${device.version}
-Ürün: ${device.product}
-Cihaz: ${device.device}`;
+Id: ${device.id}
+DeviceName : ${device.name}
+Language: ${device.language}
+Country: ${device.country}
+Location: ${device.location}
+`;
                 
                 document.getElementById("deviceInfo").innerHTML = `<pre>${info}</pre>`;
             } catch (e) {
