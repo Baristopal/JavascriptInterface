@@ -51,12 +51,12 @@
 <body>
     <h1>Device Information</h1>
     <div id="deviceInfo">Loading device information...</div>
-    <button onclick="getDeviceInfo()">Yenile</button>
+    <button onclick="getDeviceInfo()">Refresh</button>
 
-    <h2>Ses Kontrolü</h2>
+    <h2>Audio Control</h2>
     <div class="controls">
-        <button class="volume-down" onclick="decreaseVolume()">Sesi Azalt (-10%)</button>
-        <button class="volume-up" onclick="increaseVolume()">Sesi Artır (+10%)</button>
+        <button class="volume-down" onclick="decreaseVolume()">Volume Down (-10%)</button>
+        <button class="volume-up" onclick="increaseVolume()">Volume Up (+10%)</button>
     </div>
 
     <div class="volume-container">
@@ -66,14 +66,14 @@
     <script>
         function getDeviceInfo() {
             try {
-                document.getElementById("deviceInfo").innerText = "Cihaz bilgileri yükleniyor...";
+                document.getElementById("deviceInfo").innerText = "Loading device information...";
                 const deviceInfo = AndroidInterface.getDeviceInfo();
                 displayDeviceInfo(deviceInfo);
             } catch (error) {
                 console.error('Hata:', error);
                 document.getElementById("deviceInfo").innerHTML = 
-                    `<pre>Cihaz bilgileri alınamadı. 
-Bu sayfayı Android uygulaması içinden açtığınızdan emin olun.</pre>`;
+                    `<pre>Device information could not be retrieved. 
+Make sure you open this page from within the Android app.</pre>`;
             }
         }
 
@@ -98,9 +98,9 @@ Bu sayfayı Android uygulaması içinden açtığınızdan emin olun.</pre>`;
                                     
                 document.getElementById("deviceInfo").innerHTML = `<pre>${info}</pre>`;
             } catch (e) {
-                console.error("JSON Parse Hatası:", e);
+                console.error("Json parsing error:", e);
                 document.getElementById("deviceInfo").innerHTML = 
-                    `<pre>Cihaz bilgileri işlenirken hata oluştu: ${e.message}</pre>`;
+                    `<pre>Error processing device information: ${e.message}</pre>`;
             }
         }
 
@@ -111,7 +111,6 @@ Bu sayfayı Android uygulaması içinden açtığınızdan emin olun.</pre>`;
                 volumeLevel.style.width = volumePercent + '%';
                 volumeLevel.textContent = volumePercent + '%';
                 
-                // Ses seviyesine göre renk değiştir
                 if (volumePercent <= 20) {
                     volumeLevel.style.backgroundColor = '#f44336';
                 } else if (volumePercent <= 50) {
@@ -120,29 +119,28 @@ Bu sayfayı Android uygulaması içinden açtığınızdan emin olun.</pre>`;
                     volumeLevel.style.backgroundColor = '#4CAF50';
                 }
             } catch (error) {
-                console.error('Ses seviyesi güncelleme hatası:', error);
+                console.error('Volume update error:', error);
             }
         }
 
         function increaseVolume() {
             try {
                 AndroidInterface.adjustVolume(true);
-                setTimeout(updateVolumeLevel, 100); // Kısa bir gecikme ile ses seviyesini güncelle
+                setTimeout(updateVolumeLevel, 100);
             } catch (error) {
-                console.error('Ses artırma hatası:', error);
+                console.error('Volume up error:', error);
             }
         }
 
         function decreaseVolume() {
             try {
                 AndroidInterface.adjustVolume(false);
-                setTimeout(updateVolumeLevel, 100); // Kısa bir gecikme ile ses seviyesini güncelle
+                setTimeout(updateVolumeLevel, 100); 
             } catch (error) {
-                console.error('Ses azaltma hatası:', error);
+                console.error('Volume down error:', error);
             }
         }
 
-        // Sayfa yüklendiğinde ve her 1 saniyede bir ses seviyesini güncelle
         window.onload = function() {
             getDeviceInfo();
             updateVolumeLevel();
