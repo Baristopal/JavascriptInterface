@@ -79,15 +79,23 @@ Bu sayfayı Android uygulaması içinden açtığınızdan emin olun.</pre>`;
 
         function displayDeviceInfo(deviceInfo) {
             try {
-                const device = JSON.parse(deviceInfo);
+                const pdevice = JSON.parse(deviceInfo);
                 const info = `
-Id: ${device.id}
-DeviceName : ${device.name}
-Language: ${device.language}
-Country: ${device.country}
-Location: ${device.location}
-`;
-                
+                    Cient Name: ${pdevice.clientName}
+                    Client ID : ${pdevice.clientId}
+                    Client Version: ${pdevice.clientVersion}
+                    OS Device Name: ${pdevice.osDeviceName}
+                    Language: ${pdevice.language}
+                    Country: ${pdevice.country}
+                    Location: ${pdevice.location}
+                    Product 1 : ${pdevice.product1}
+                    Product 2 : ${pdevice.product2}
+                    Product 3 : ${pdevice.product3}
+                    Product 4 : ${pdevice.product4}
+                    Product 5 : ${pdevice.product5}
+                    Product 6 : ${pdevice.product6}
+                    `;
+                                    
                 document.getElementById("deviceInfo").innerHTML = `<pre>${info}</pre>`;
             } catch (e) {
                 console.error("JSON Parse Hatası:", e);
